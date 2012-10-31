@@ -41,3 +41,9 @@ de:
       title: "Karlsruhe.rb"
       subtitle: "Ruby User Group Karlsruhe"
       meta_desc: "Ruby / Rails User Group Karlsruhe"
+    dresden:
+      city: "Dresden"
+      name: "Ruby Usergroup Dresden"
+      title: "Dresden on Ruby"
+      subtitle: "Ruby User Group Dresden"
+      meta_desc: "Ruby / Rails User Group Dresden"
