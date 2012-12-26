@@ -1,13 +1,5 @@
 # encoding: UTF-8
 module ApplicationHelper
-  def title
-    I18n.tw("title")
-  end
-
-  def subtitle
-    I18n.tw("subtitle")
-  end
-
   def contributors
     {
       phoet:          "Peter Schröder",
@@ -20,18 +12,6 @@ module ApplicationHelper
       basiszwo:       "Stefan Botzenhart",
       mustangore:     "Sébastien Jelsch",
     }.map {|key, value| "#{key} (#{value})"}.join(" - ")
-  end
-
-  def page_title
-    "#{title} - #{content_for?(:page_title) ? content_for(:page_title) : subtitle}"
-  end
-
-  def mobile_title
-    content_for?(:mobile_title) ? content_for(:mobile_title) : I18n.tw('title')
-  end
-
-  def meta_desc
-    "#{page_title} - #{I18n.tw("meta_desc")}"
   end
 
   def whitelabel_stylesheet_link_tag
@@ -75,10 +55,15 @@ module ApplicationHelper
   def map(locations, init = {zoom: 12})
     locations = Array(locations)
     init = Whitelabel[:location].merge(init)
-    content_tag(:div, '', class: 'map_canvas', 'data-map' => locations.to_json, 'data-init' => init.to_json)
+    data = {
+      map: locations.to_json,
+      init: init.to_json,
+    }
+    content_tag :div, '', class: 'map_canvas', data: data
   end
 
   def markdown(content)
+    return nil unless content
     content = markdown_parser.render(content).html_safe
     content_tag :div, content, class: :markdown
   end
@@ -95,6 +80,12 @@ module ApplicationHelper
       concat content_tag(:div, link_to(t("hint.close"), '#'), class: :close) if close
       yield
     end
+  end
+
+  def render_cached
+    key = [Whitelabel[:label_id], controller_name, action_name].join("/")
+    Rails.logger.info "cache fragment '#{key}'"
+    cache(key, expires_in: 4.hours) { yield }
   end
 
   private
